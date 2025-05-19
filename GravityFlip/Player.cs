@@ -4,13 +4,14 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static GravityFlip.LevelManager;
 
 namespace GravityFlip
 {
     public class Player
     {
         public float X, Y;
-        public int Width = 30, Height = 40;
+        public int Width = 25, Height = 35;
         public float Speed = 5f;
         public float JumpForce = 15f;
         public bool IsGravityNormal = true;
@@ -29,6 +30,8 @@ namespace GravityFlip
 
         public void Update(bool moveLeft, bool moveRight, bool jump)
         {
+            X = MathHelper.Clamp(X, 0, bounds.Width - Width);
+            Y = MathHelper.Clamp(Y, 0, bounds.Height - Height);
             if (GravityCooldown > 0)
             {
                 GravityCooldown -= 1f / 60f;

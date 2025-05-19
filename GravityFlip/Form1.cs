@@ -12,39 +12,102 @@ namespace GravityFlip
 {
     public partial class Form1 : Form
     {
-        private Player player; 
+        private Player player;
+        private LevelManager _levelManager;
         private Timer gameLoop;  
         private List<Platform> platforms = new List<Platform>();
         private Rectangle bounds;
+        private int _notificationTimer = 0;
+        private string _levelNotification = "";
+        private const int NotificationDuration = 120;
+        private const int BaseWidth = 1280;
+        private const int BaseHeight = 720;
+        private Font _notificationFont = new Font("Arial", 24, FontStyle.Bold);
+
 
         public Form1()
         {
             InitializeComponent();
 
-            this.ClientSize = new Size(800, 600);
-            this.DoubleBuffered = true;
+            this.ClientSize = new Size(BaseWidth, BaseHeight);
+            this.StartPosition = FormStartPosition.CenterScreen;
 
-            bounds = new Rectangle(0, 0, this.ClientSize.Width, this.ClientSize.Height);
+            _levelManager = new LevelManager(BaseWidth, BaseHeight);
+            _levelManager.Initialize();
+
+            LoadLevel(_levelManager.CurrentLevel);
+
+            gameLoop = new Timer();
+            gameLoop.Interval = 12; // ~60 FPS
+            gameLoop.Tick += GameLoop_Tick;
+            gameLoop.Start();
+        }
+        
+        private void ShowLevelNotification(string message)
+        {
+            _levelNotification = message;
+            _notificationTimer = 120; 
+        }
+
+        private void LoadLevel(Level level)
+        {
+            bounds = new Rectangle(0, 0, BaseWidth, BaseHeight);
 
             player = new Player(bounds)
             {
-                X = 200,
-                Y = 300
+                X = level.StartPosition.X,
+                Y = level.StartPosition.Y,
+                IsGravityNormal = true,
+                verticalVelocity = 0
             };
 
-            platforms = new List<Platform>
+            platforms = level.Platforms;
+            this.Invalidate();
+        }
+
+        private void CheckLevelCompletion()
+        {
+            var door = _levelManager.CurrentLevel.Platforms
+                .FirstOrDefault(p => p.Color == Color.Gold);
+
+            if (door != null)
             {
-                new Platform(0, 550, 800, 20, Color.Green),
-                new Platform(0, 0, 800, 20, Color.Green),
-                new Platform(100, 400, 200, 20, Color.Blue, true),
-                new Platform(400, 300, 200, 20, Color.Red, true),
-                new Platform(200, 200, 200, 20, Color.Blue, true)
-            };
+                // Простая проверка пересечения прямоугольников
+                bool isColliding = player.X < door.X + door.Width &&
+                                  player.X + player.Width > door.X &&
+                                  player.Y < door.Y + door.Height &&
+                                  player.Y + player.Height > door.Y;
 
-            gameLoop = new Timer();
-            gameLoop.Interval = 16;
-            gameLoop.Tick += GameLoop_Tick;
-            gameLoop.Start();
+                if (isColliding)
+                {
+                    _levelManager.CurrentLevel.IsCompleted = true;
+
+                    if (_levelManager.LoadNextLevel())
+                    {
+                        LoadLevel(_levelManager.CurrentLevel);
+                        ShowNotification($"Уровень {_levelManager.CurrentLevel.Number}: {_levelManager.CurrentLevel.Name}");
+                    }
+                    else
+                    {
+                        ShowNotification("Вы прошли все уровни!");
+                        Task.Delay(2000).ContinueWith(_ => this.Close(),
+                            TaskScheduler.FromCurrentSynchronizationContext());
+                    }
+                }
+            }
+        }
+
+        private bool CheckCollisionWithDoor(Platform door)
+        {
+            return player.X + player.Width > door.X &&
+                   player.X < door.X + door.Width &&
+                   player.Y + player.Height > door.Y &&
+                   player.Y < door.Y + door.Height;
+        }
+        private void ShowNotification(string message)
+        {
+            _levelNotification = message;
+            _notificationTimer = 120; 
         }
 
         private void CheckCollisions()
@@ -124,6 +187,7 @@ namespace GravityFlip
 
             player.Update(moveLeft, moveRight, jump);
             CheckCollisions();
+            CheckLevelCompletion();
 
             this.Invalidate();
         }
@@ -134,17 +198,11 @@ namespace GravityFlip
 
             e.Graphics.Clear(Color.White);
 
-            foreach (var platform in platforms)
+            foreach (var platform in platforms.Where(p => p.IsActive(player.IsGravityNormal)))
             {
-                if (platform.IsActive(player.IsGravityNormal))
-                {
-                    using (var brush = new SolidBrush(platform.Color))
-                    {
-                        e.Graphics.FillRectangle(brush,
-                            platform.X, platform.Y,
-                            platform.Width, platform.Height);
-                    }
-                }
+                e.Graphics.FillRectangle(new SolidBrush(platform.Color),
+                    platform.X, platform.Y,
+                    platform.Width, platform.Height);
             }
 
             using (var playerBrush = new SolidBrush(Color.Blue))
@@ -155,9 +213,24 @@ namespace GravityFlip
                 e.Graphics.FillEllipse(Brushes.White, player.X + 5, eyeY, 8, 8);
                 e.Graphics.FillEllipse(Brushes.White, player.X + player.Width - 13, eyeY, 8, 8);
             }
+            if (_notificationTimer > 0)
+            {
+                var size = e.Graphics.MeasureString(_levelNotification, _notificationFont);
+                e.Graphics.DrawString(_levelNotification, _notificationFont, Brushes.White,
+                    (this.ClientSize.Width - size.Width) / 2, 50);
+                _notificationTimer--;
+            }
 
             string debugInfo = $"Pos: {player.X:F0},{player.Y:F0} Gravity: {(player.IsGravityNormal ? "Normal" : "Reversed")}";
-            e.Graphics.DrawString(debugInfo, this.Font, Brushes.Black, 10, 10);
+            e.Graphics.DrawString($"Уровень: {_levelManager.CurrentLevel.Number}",
+            this.Font, Brushes.White, 20, 20);
+            //отладка
+            var door = _levelManager.CurrentLevel.Platforms.FirstOrDefault(p => p.Color == Color.Gold);
+            if (door != null)
+            {
+                bool isColliding = CheckCollisionWithDoor(door);
+                e.Graphics.DrawString($"Door collision: {isColliding}", this.Font, Brushes.Red, 20, 50);
+            }
         }
 
         private static class Keyboard
@@ -169,9 +242,19 @@ namespace GravityFlip
             public static void KeyUp(Keys key) => pressedKeys.Remove(key);
         }
 
-        protected override void OnKeyDown(KeyEventArgs e) => Keyboard.KeyDown(e.KeyCode);
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                this.WindowState = FormWindowState.Normal;
+                this.FormBorderStyle = FormBorderStyle.Sizable;
+            }
+            Keyboard.KeyDown(e.KeyCode);
+        }
         protected override void OnKeyUp(KeyEventArgs e) => Keyboard.KeyUp(e.KeyCode);
 
+
     }
+
 }
 

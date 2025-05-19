@@ -72,7 +72,8 @@ namespace GravityFlip
 
             foreach (var platform in platforms)
             {
-                if (!platform.IsVisible) continue;
+                if (!platform.IsActive(player.IsGravityNormal))
+                    continue;
 
                 if (player.X < platform.X + platform.Width &&
                     player.X + player.Width > platform.X &&
@@ -135,17 +136,13 @@ namespace GravityFlip
 
             foreach (var platform in platforms)
             {
-                bool shouldDraw = !platform.GravityDependent ||
-                                 (platform.GravityDependent &&
-                                  ((platform.Color == Color.Blue && player.IsGravityNormal) ||
-                                   (platform.Color == Color.Red && !player.IsGravityNormal)));
-
-                if (shouldDraw)
+                if (platform.IsActive(player.IsGravityNormal))
                 {
                     using (var brush = new SolidBrush(platform.Color))
                     {
-                        e.Graphics.FillRectangle(brush, platform.X, platform.Y, platform.Width, platform.Height);
-                        e.Graphics.DrawRectangle(Pens.Black, platform.X, platform.Y, platform.Width, platform.Height);
+                        e.Graphics.FillRectangle(brush,
+                            platform.X, platform.Y,
+                            platform.Width, platform.Height);
                     }
                 }
             }

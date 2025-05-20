@@ -60,8 +60,8 @@ namespace GravityFlip
                 StartPosition = new Point(50, 620),
                 Platforms =
                 {
-                    new Platform(0, 660, 1280, 20, Color.Green),         // Пол
-                    new Platform(0, 0, 1280, 20, Color.Green),           // Верхняя граница (если нужно)
+                    new Platform(0, 660, 300, 20, Color.Green),         // Пол
+                    new Platform(0, 0, 1280, 20, Color.Green),           // Верхняя граница
                     new Platform(350, 550, 100, 15, Color.Blue, true),   // 1-я платформа
                     new Platform(550, 480, 100, 15, Color.Blue, true),   // 2-я платформа
                     new Platform(750, 410, 100, 15, Color.Blue, true),   // 3-я платформа
@@ -70,7 +70,7 @@ namespace GravityFlip
 
                     new Platform(900, 0, 20, 200, Color.Blue, true),     // Вертикальная платформа
 
-                    new Platform(1050, 150, 150, 15, Color.Red, true),   // Красная платформа (движущаяся?)
+                    new Platform(1050, 150, 150, 15, Color.Red, true),   // Красная платформа 
 
                     new Platform(1200, 150, 40, 100, Color.Gold),        // Дверь
                 }
@@ -79,16 +79,20 @@ namespace GravityFlip
             var level2 = new Level
             {
                 Number = 2,
-                Name = "Красное и синее",
+                Name = "Точные прыжки",
                 StartPosition = new Point(100, 300),
                 Platforms =
                 {
-                    new Platform(0, 650, 1280, 20, Color.Green),
-                    new Platform(200, 550, 80, 15, Color.Blue, true),
-                    new Platform(350, 450, 80, 15, Color.Red, true),
-                    new Platform(500, 550, 80, 15, Color.Blue, true),
-                    new Platform(650, 350, 80, 15, Color.Red, true),
-                    new Platform(1100, 250, 80, 80, Color.Gold)
+                    new Platform(0, 660, 280, 20, Color.Green),           // Нижняя платформа (пол)
+                    new Platform(0, 0, 280, 20, Color.Green),             // Верхняя граница слева
+
+                    new Platform(300, 550, 100, 15, Color.Blue, true),    // Синяя платформа 1
+                    new Platform(800, 430, 100, 15, Color.Blue, true),    // Синяя платформа 2
+
+                    new Platform(550, 300, 180, 15, Color.Red, true),     // Красная платформа 1
+                    new Platform(1050, 180, 180, 15, Color.Red, true),    // Красная платформа 2
+
+                    new Platform(1200, 180, 40, 100, Color.Gold),         // Дверь
                 }
             };
 
@@ -96,15 +100,19 @@ namespace GravityFlip
             {
                 Number = 3,
                 Name = "Прыжковый вызов",
-                StartPosition = new Point(100, 600),
+                StartPosition = new Point(50, 600),
                 Platforms =
                 {
-                    new Platform(0, 650, 1280, 20, Color.Green),
-                    new Platform(200, 500, 60, 15, Color.Blue, true),
-                    new Platform(400, 400, 60, 15, Color.Red, true),
-                    new Platform(600, 300, 60, 15, Color.Blue, true),
-                    new Platform(800, 200, 60, 15, Color.Red, true),
-                    new Platform(1100, 100, 80, 80, Color.Gold)
+                    new Platform(0, 660, 300, 20, Color.Green),              // Пол
+                    new Platform(0, 0, 300, 20, Color.Green),                // Верхняя граница слева
+
+                    new Platform(350, 570, 100, 15, Color.Blue, true),       // Синяя платформа 1
+                    new Platform(550, 500, 100, 15, Color.Red, true),        // Красная
+                    new Platform(750, 430, 100, 15, Color.Blue, true),       // Синяя платформа 2
+                    new Platform(950, 360, 100, 15, Color.Red, true),        // Красная
+                    new Platform(1150, 280, 100, 15, Color.Blue, true),      // Синяя платформа 3
+
+                    new Platform(1230, 180, 40, 100, Color.Gold),            // Дверь (высоко)
                 }
             };
 
@@ -115,14 +123,18 @@ namespace GravityFlip
                 StartPosition = new Point(100, 300),
                 Platforms =
                 {
-                    new Platform(0, 650, 1280, 20, Color.Green),
-                    new Platform(150, 500, 70, 15, Color.Blue, true),
-                    new Platform(300, 400, 70, 15, Color.Red, true),
-                    new Platform(450, 500, 70, 15, Color.Blue, true),
-                    new Platform(600, 300, 70, 15, Color.Red, true),
-                    new Platform(750, 400, 70, 15, Color.Blue, true),
-                    new Platform(900, 200, 70, 15, Color.Red, true),
-                    new Platform(1100, 100, 80, 80, Color.Gold)
+                    new Platform(0, 660, 1280, 20, Color.Green),             // Пол
+
+                    new Platform(250, 560, 100, 15, Color.Blue, true),       // 1
+                    new Platform(450, 500, 100, 15, Color.Red, true),        // 2 
+                    new Platform(650, 440, 100, 15, Color.Blue, true),       // 3
+                    new Platform(850, 380, 100, 15, Color.Red, true),        // 4
+                    new Platform(1050, 320, 100, 15, Color.Blue, true),      // 5
+
+                    new Platform(1100, 420, 40, 100, Color.Gold),            // Дверь
+
+                    new Platform(0, 300, 200, 20, Color.Green),              // Низкий потолок 
+                    new Platform(500, 250, 200, 20, Color.Green),            // Потолок
                 }
             };
 

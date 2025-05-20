@@ -38,7 +38,7 @@ namespace GravityFlip
             LoadLevel(_levelManager.CurrentLevel);
 
             gameLoop = new Timer();
-            gameLoop.Interval = 12; // ~60 FPS
+            gameLoop.Interval = 12;
             gameLoop.Tick += GameLoop_Tick;
             gameLoop.Start();
         }
@@ -72,13 +72,10 @@ namespace GravityFlip
 
             if (door != null)
             {
-                // Простая проверка пересечения прямоугольников
-                bool isColliding = player.X < door.X + door.Width &&
-                                  player.X + player.Width > door.X &&
-                                  player.Y < door.Y + door.Height &&
-                                  player.Y + player.Height > door.Y;
+                bool isNearDoor = Math.Abs((player.X + player.Width / 2) - (door.X + door.Width / 2)) < 50 &&
+                                  Math.Abs((player.Y + player.Height / 2) - (door.Y + door.Height / 2)) < 50;
 
-                if (isColliding)
+                if (isNearDoor)
                 {
                     _levelManager.CurrentLevel.IsCompleted = true;
 
@@ -114,23 +111,12 @@ namespace GravityFlip
         {
             player.IsGrounded = false;
 
-            if (player.IsGravityNormal)
+            if (player.Y + player.Height > bounds.Bottom || player.Y < bounds.Top)
             {
-                if (player.Y + player.Height > bounds.Bottom)
-                {
-                    player.Y = bounds.Bottom - player.Height;
-                    player.IsGrounded = true;
-                    player.verticalVelocity = 0;
-                }
-            }
-            else
-            {
-                if (player.Y < 0)
-                {
-                    player.Y = 0;
-                    player.IsGrounded = true;
-                    player.verticalVelocity = 0;
-                }
+                player.X = _levelManager.CurrentLevel.StartPosition.X;
+                player.Y = _levelManager.CurrentLevel.StartPosition.Y;
+                player.verticalVelocity = 0;
+                return;
             }
 
             foreach (var platform in platforms)
@@ -210,8 +196,8 @@ namespace GravityFlip
                 e.Graphics.FillRectangle(playerBrush, player.X, player.Y, player.Width, player.Height);
 
                 int eyeY = player.IsGravityNormal ? (int)player.Y + 5 : (int)player.Y + player.Height - 15;
-                e.Graphics.FillEllipse(Brushes.White, player.X + 5, eyeY, 8, 8);
-                e.Graphics.FillEllipse(Brushes.White, player.X + player.Width - 13, eyeY, 8, 8);
+                e.Graphics.FillEllipse(Brushes.White, player.X + 3, eyeY, 8, 8);
+                e.Graphics.FillEllipse(Brushes.White, player.X + player.Width - 10, eyeY, 8, 8);
             }
             if (_notificationTimer > 0)
             {
@@ -223,14 +209,7 @@ namespace GravityFlip
 
             string debugInfo = $"Pos: {player.X:F0},{player.Y:F0} Gravity: {(player.IsGravityNormal ? "Normal" : "Reversed")}";
             e.Graphics.DrawString($"Уровень: {_levelManager.CurrentLevel.Number}",
-            this.Font, Brushes.White, 20, 20);
-            //отладка
-            var door = _levelManager.CurrentLevel.Platforms.FirstOrDefault(p => p.Color == Color.Gold);
-            if (door != null)
-            {
-                bool isColliding = CheckCollisionWithDoor(door);
-                e.Graphics.DrawString($"Door collision: {isColliding}", this.Font, Brushes.Red, 20, 50);
-            }
+            this.Font, Brushes.Black, 30, 30);
         }
 
         private static class Keyboard

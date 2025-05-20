@@ -20,6 +20,8 @@ namespace GravityFlip
         public bool IsDoor { get; set; }
         public bool IsActive(bool isGravityNormal)
         {
+            if (Color == Color.Gold) return true;
+
             if (!GravityDependent) return true;
             return (Color == Color.Blue && isGravityNormal) ||
                    (Color == Color.Red && !isGravityNormal);

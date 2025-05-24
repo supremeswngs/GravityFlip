@@ -123,18 +123,11 @@ namespace GravityFlip
                 StartPosition = new Point(100, 300),
                 Platforms =
                 {
-                    new Platform(0, 660, 1280, 20, Color.Green),             // Пол
-
-                    new Platform(250, 560, 100, 15, Color.Blue, true),       // 1
-                    new Platform(450, 500, 100, 15, Color.Red, true),        // 2 
-                    new Platform(650, 440, 100, 15, Color.Blue, true),       // 3
-                    new Platform(850, 380, 100, 15, Color.Red, true),        // 4
-                    new Platform(1050, 320, 100, 15, Color.Blue, true),      // 5
-
-                    new Platform(1100, 420, 40, 100, Color.Gold),            // Дверь
-
-                    new Platform(0, 300, 200, 20, Color.Green),              // Низкий потолок 
-                    new Platform(500, 250, 200, 20, Color.Green),            // Потолок
+                    new Platform(0, 620, 300, 20, Color.Green),             // Стартовая платформа
+                    new Platform(350, 680, 100, 15, Color.Blue, true),      // Нижняя синяя
+                    new Platform(1100, 700, 100, 15, Color.Blue, true),      // Центральная синяя
+                    new Platform(850, 100, 100, 15, Color.Red, true),       // Верхняя красная (опасность)
+                    new Platform(1180, 600, 40, 100, Color.Gold)
                 }
             };
 

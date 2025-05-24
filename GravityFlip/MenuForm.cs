@@ -97,7 +97,7 @@ namespace GravityFlip
             var tutorialForm = new Form
             {
                 Text = "Обучение",
-                ClientSize = new Size(600, 400),
+                ClientSize = new Size(1280, 720),
                 StartPosition = FormStartPosition.CenterScreen,
                 FormBorderStyle = FormBorderStyle.FixedDialog
             };

@@ -17,7 +17,7 @@ namespace GravityFlip
         public bool IsGravityNormal = true;
         public bool IsGrounded = false;
         public float GravityCooldown = 0f;
-        public const float GravityDelay = 0.5f;
+        public const float GravityDelay = 1f;
 
         private float gravity = 0.5f;
         public float verticalVelocity = 0;
